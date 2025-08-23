@@ -1,0 +1,26 @@
+services:
+  backend:
+    build: .
+    container_name: rag-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - ALLOWED_ORIGINS=http://localhost:3000
+      - LLM_BASE_URL=http://host.docker.internal:1234/
+      - LLM_API_KEY=not-needed
+      - DEFAULT_FALLBACKS=gpt-oss-20b
+    volumes:
+      - ./uploaded_files:/app/uploaded_files
+      - ./chroma_db:/app/chroma_db
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  frontend:
+    build: ./frontend
+    container_name: rag-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_API_URL=http://localhost:8000
+    stdin_open: true
+    tty: true
